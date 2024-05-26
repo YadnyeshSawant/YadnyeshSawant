@@ -10,7 +10,7 @@
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
-<a href="https://linkedin.com/in/yadnyesh sawant" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="yadnyesh sawant" height="30" width="40" /></a>
+<a href="https://linkedin.com/in/yadnyesh-sawant-3ba3a5270" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="yadnyesh sawant" height="30" width="40" /></a>
 <a href="https://fb.com/yadnyesh.sawant.73" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/facebook.svg" alt="yadnyesh sawant" height="30" width="40" /></a>
 <a href="https://instagram.com/shooter_yadnyesh" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/instagram.svg" alt="shooter_yadnyesh" height="30" width="40" /></a>
 <a href="https://www.codechef.com/users/yadnyesh2022" target="blank"><img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@3.1.0/icons/codechef.svg" alt="yadnyesh2022" height="30" width="40" /></a>
