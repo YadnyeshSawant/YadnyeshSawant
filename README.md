@@ -1,12 +1,10 @@
 <h1 align="center">Hi 👋, I'm Yadnyesh Sawant</h1>
 <h3 align="center">BSC CS student proficient in C/C++,with expertise in PCB design and hands-on experience in Robotics using (ESP32 and RPi). Passionate about learning new tech.</h3>
-
+<img align="right" alt="Coding" width="400" src="https://i.pinimg.com/originals/8b/35/fe/8b35fef55fba1a201c9c7a11d3ec3d64.gif">
 
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=yadnyeshsawant&label=Profile%20views&color=0e75b6&style=flat" alt="yadnyeshsawant" /> </p>
 
-<p align="left"> <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=yadnyeshsawant" alt="yadnyeshsawant" /></a> </p>
-
-- 💬 Ask me about **C,Python, HTML, CSS, JAVA, PostgrsSQL, MySQL, Pandas, Numpy, Matplotlib, RaspberryPi, Linux-Ubuntu**
+- 💬 Ask me about **C,Python,HTML, CSS,JAVA,PostgrsSQL,MySQL,Pandas, Numpy, Matplotlib, RaspberryPi,Linux-Ubuntu**
 
 - 📫 How to reach me **yadnyesh2022@gmail.com**
 
