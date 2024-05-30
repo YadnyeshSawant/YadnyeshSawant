@@ -2,7 +2,7 @@
 <h1 align="center">Hi 👋, I'm Yadnyesh Sawant</h1> 
 <h3 align="center">BSC CS student proficient in C/C++ and Python porogramming also curently mastering in JAVA. Having expertise in PCB design using PROTEUS and hands-on experience in Robotics using (ESP32 and RPi). Passionate about learning new tech.</h3>
 <img align="right" alt="Coding" width="400" src="https://raw.githubusercontent.com/Potential17/Potential17/master/user%20(2).gif">
-
+ 
 
 - 💬 Ask me about **C,Python,HTML, CSS,JAVA,PostgrsSQL,MySQL,Pandas, Numpy, Matplotlib, RaspberryPi,Linux-Ubuntu**
 
