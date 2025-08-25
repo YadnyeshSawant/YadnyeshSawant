@@ -65,7 +65,8 @@
 
 ###
 
-<p align="center">I am a dedicated BSc Computer Science student with a strong proficiency in C programming and a comprehensive understanding of Data Structures and Algorithms (DSA) implemented in C. Currently, I am expanding my expertise in Java development to enhance my programming skills. My technical portfolio includes hands-on experience in PCB design using PROTEUS and developing robotics applications with Raspberry Pi (RPi) and ESP32 microcontrollers. I have also earned certifications in POSTMAN API and Prompt Engineering, reflecting my commitment to mastering cutting-edge technologies and methodologies.</p>
+<p align="center">I am an MCA student at MIT World Peace University and a B.Sc. Computer Science graduate with an 8.42 CGPA. My core strengths include C programming, Java, and data structures & algorithms. I specialize in backend development using Spring Boot and Hibernate, and I also have experience in PCB design with Proteus, as well as robotics projects using Raspberry Pi and ESP32.
+I have worked on NLP projects involving SQuAD-style datasets, leveraging translation models like M2M100_418M in Google Colab. Additionally, I hold certifications in Postman API, Prompt Engineering, and Git. Passionate about building scalable and efficient solutions, I strive to apply technology to solve real-world problems and continuously challenge myself through hands-on innovation.</p>
 
 ###
 
