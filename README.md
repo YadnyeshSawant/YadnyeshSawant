@@ -31,9 +31,9 @@
 -->
 <br clear="both">
 
-<div align="center">
+<!-- <div align="center">
   <img height="280" src="https://img.freepik.com/premium-vector/dark-blue-technology-high-tech-abstract-banner-background_28629-1326.jpg"  />
-</div>
+</div> -->
 
 ###
 
@@ -51,9 +51,9 @@
 
 ###
 
-<div align="center">
+<!-- <div align="center">
   <img src="https://profile-counter.glitch.me/YadnyeshSawant/count.svg?"  />
-</div>
+</div> -->
 
 ###
 
