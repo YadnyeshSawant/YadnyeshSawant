@@ -65,7 +65,7 @@
 
 ###
 
-<p align="center">I am an MCA student at MIT World Peace University and a B.Sc. Computer Science graduate with an 8.42 CGPA. My core strengths include C programming, Java, and data structures & algorithms. I specialize in backend development using Spring Boot and Hibernate, and I also have experience in PCB design with Proteus, as well as robotics projects using Raspberry Pi and ESP32.
+<p align="center">I am an MCA student at MIT World Peace University, Pune and a B.Sc. Computer Science graduate with an 8.42 CGPA. My core strengths include C programming, Java, and data structures & algorithms. I specialize in backend development using Spring Boot and Hibernate, and I also have experience in PCB design with Proteus, as well as robotics projects using Raspberry Pi and ESP32.
 I have worked on NLP projects involving SQuAD-style datasets, leveraging translation models like M2M100_418M in Google Colab. Additionally, I hold certifications in Postman API, Prompt Engineering, and Git. Passionate about building scalable and efficient solutions, I strive to apply technology to solve real-world problems and continuously challenge myself through hands-on innovation.</p>
 
 ###
