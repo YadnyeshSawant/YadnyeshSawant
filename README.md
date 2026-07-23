@@ -32,7 +32,7 @@
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-yadnyesh.dev-0d1117?style=for-the-badge&logo=vercel&logoColor=white)](https://yadnyeshsawant.vercel.app/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-YadnyeshSawant-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/yadnyesh-sawant/)
-[![Interactive Terminal](https://img.shields.io/badge/Terminal-Interactive-39d353?style=for-the-badge&logo=gnubash&logoColor=white)](./interactive-terminal/index.html)
+[![Interactive Terminal](https://img.shields.io/badge/Terminal-Interactive-39d353?style=for-the-badge&logo=gnubash&logoColor=white)](https://yadnyeshsawant.github.io/YadnyeshSawant/interactive-terminal/)
 <!-- Add any other links you want! -->
 
 <br>
