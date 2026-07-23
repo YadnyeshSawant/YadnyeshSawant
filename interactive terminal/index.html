@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>yadnyesh@github ~ interactive terminal</title>
+<meta name="description" content="Yadnyesh Sawant — interactive terminal-style GitHub profile with live contribution stats." />
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --window-bg:rgba(13,17,23,0.92); --frame:#30363d; --muted:#8b949e;
+    --green:#39d353; --green-dim:#146c37; --cyan:#58a6ff; --white:#e6edf3;
+    --red:#ff5f56; --yellow:#ffbd2e;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--white);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    padding:24px 14px 60px;}
+
+  body[data-theme="powershell"] {
+    --bg: #00122e;
+    --bg2: #001e4a;
+    --window-bg: rgba(1, 36, 86, 0.95);
+    --frame: #0047a5;
+    --muted: #a3c4f3;
+    --green: #00d7ff;
+    --cyan: #ffff00;
+    --white: #ffffff;
+    --yellow: #ffbd2e;
+  }
+
+  body[data-theme="ubuntu"] {
+    --bg: #1c0615;
+    --bg2: #28081e;
+    --window-bg: rgba(48, 10, 36, 0.95);
+    --frame: #5e2750;
+    --muted: #aea79f;
+    --green: #8ae234;
+    --cyan: #34e2e2;
+    --white: #ffffff;
+    --yellow: #fce94f;
+  }
+
+  body[data-theme="macos"] {
+    --bg: #121212;
+    --bg2: #282828;
+    --window-bg: rgba(28, 28, 30, 0.95);
+    --frame: #3a3a3c;
+    --muted: #98989d;
+    --green: #30d158;
+    --cyan: #64d2ff;
+    --white: #f2f2f7;
+    --yellow: #ffd60a;
+  }
+  a{color:var(--cyan);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  .wrap{width:100%;max-width:1150px;position:relative;z-index:2;}
+
+  .hero{text-align:center;margin-bottom:22px;}
+  .hero pre{font-size:clamp(6px,1.6vw,13px);line-height:1.15;color:var(--green);
+    margin:0 0 6px;white-space:pre;overflow-x:auto;}
+  .hero .tagline{color:var(--muted);font-size:14px;}
+  .hero img{width:min(260px,60vw);border-radius:10px;border:1px solid var(--frame);margin-top:14px;}
+
+  .window{background:var(--window-bg);backdrop-filter:blur(8px);border:1px solid var(--frame);border-radius:10px;
+    overflow:hidden;box-shadow:0 20px 60px -20px rgba(0,0,0,.6);}
+  .titlebar{display:flex;align-items:center;gap:8px;padding:9px 14px;
+    background:var(--bg2);border-bottom:1px solid var(--frame);position:relative;}
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .titlebar .label{position:absolute;left:0;right:0;text-align:center;color:var(--muted);font-size:12px;}
+
+  .term{padding:18px 20px;min-height:380px;max-height:65vh;overflow-y:auto;font-size:13.5px;line-height:1.55;}
+  .term .line{white-space:pre-wrap;word-break:break-word;}
+  .term .prompt-line{display:flex;gap:8px;}
+  .term .prompt-tag{color:var(--green);flex-shrink:0;}
+  .out-cmd{color:var(--cyan);}
+  .out-dim{color:var(--muted);}
+  .out-green{color:var(--green);}
+  .out-white{color:var(--white);}
+  .out-yellow{color:var(--yellow);}
+
+  .inputRow{display:flex;gap:8px;align-items:center;padding:0 16px 16px;}
+  .inputRow .prompt-tag{color:var(--green);}
+  #cmdInput{flex:1;background:transparent;border:none;outline:none;color:var(--white);
+    font-family:inherit;font-size:13.5px;caret-color:var(--green);}
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--green);
+    animation:blink 1s steps(1) infinite;vertical-align:middle;}
+  @keyframes blink{50%{opacity:0;}}
+
+  .hint{text-align:center;color:var(--muted);font-size:12px;margin-top:10px;}
+  .hint kbd{background:var(--bg2);border:1px solid var(--frame);border-radius:4px;
+    padding:1px 6px;color:var(--white);}
+
+  /* stat cards */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px;margin:18px 0;}
+  .stat{border:1px solid var(--frame);border-radius:8px;padding:12px;background:var(--bg2);}
+  .stat .num{font-size:22px;color:var(--green);font-weight:600;}
+  .stat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+
+  /* heatmap */
+  .heatmap-wrap{overflow-x:auto;padding:4px 0;}
+  .heatmap{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,10px);gap:2px;}
+  .cell{width:10px;height:10px;border-radius:2px;cursor:pointer;transition:transform .08s;}
+  .cell:hover{transform:scale(1.6);outline:1px solid var(--white);}
+  .legend{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);margin-top:8px;}
+  .legend .cell{cursor:default;}
+  .legend .cell:hover{transform:none;outline:none;}
+  #tooltip{position:fixed;pointer-events:none;background:#1c2128;border:1px solid var(--frame);
+    color:var(--white);font-size:11.5px;padding:4px 8px;border-radius:6px;display:none;z-index:50;
+    box-shadow:0 8px 20px rgba(0,0,0,.5);}
+
+  /* custom thin gray scrollbars */
+  .term, .heatmap-wrap, .cli-table-wrap, ::-webkit-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #30363d transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #8b949e;
+  }
+
+  /* full window mode */
+  body.fullscreen-mode {
+    padding: 0;
+    overflow: hidden;
+  }
+  body.fullscreen-mode .hero,
+  body.fullscreen-mode footer,
+  body.fullscreen-mode .hint {
+    display: none !important;
+  }
+  body.fullscreen-mode .wrap {
+    max-width: 100vw;
+    width: 100vw;
+    height: 100vh;
+  }
+  body.fullscreen-mode .window {
+    border-radius: 0;
+    border: none;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  body.fullscreen-mode .term {
+    flex: 1;
+    max-height: none;
+    min-height: auto;
+  }
+
+  footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px;}
+  footer .links{margin-bottom:8px;}
+  footer .links a{margin:0 8px;}
+
+  @media (max-width:520px){
+    .term{font-size:12.5px;}
+    .hero pre{font-size:6px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h2 style="font-size:20px;font-weight:600;color:var(--green);margin:0 0 6px;letter-spacing:0.02em;">Welcome to Yadnyesh's Interactive Terminal</h2>
+    <div class="tagline">Yadnyesh Sawant · MCA Student @ MIT-WPU · Java & Spring Boot Developer</div>
+  </div>
+
+  <div class="window">
+    <div class="titlebar">
+      <div class="dot" style="background:var(--red)"></div>
+      <div class="dot" style="background:var(--yellow)"></div>
+      <div class="dot" style="background:#27c93f"></div>
+      <div class="label" id="titlebarLabel">yadnyesh@github: ~</div>
+    </div>
+    <div class="term" id="term"></div>
+    <div class="inputRow">
+      <span class="prompt-tag" id="inputRowTag">yadnyesh@github:~$</span>
+      <input id="cmdInput" autocomplete="off" autocapitalize="off" spellcheck="false" />
+      <span class="cursor" id="fakeCursor"></span>
+    </div>
+  </div>
+
+  <div class="hint">type <kbd>help</kbd> to see commands · try <kbd>resume</kbd>, <kbd>projects</kbd>, or <kbd>matrix</kbd></div>
+
+  <footer>
+    <div class="links">
+      <a href="./Yadnyesh_Resume.pdf" target="_blank" rel="noopener">resume</a>·
+      <a href="https://github.com/YadnyeshSawant" target="_blank" rel="noopener">github</a>·
+      <a href="https://linkedin.com/in/yadnyesh-sawant" target="_blank" rel="noopener">linkedin</a>·
+      <a href="https://leetcode.com/yadnyesh" target="_blank" rel="noopener">leetcode</a>·
+      <a href="mailto:yadnyesh2018@gmail.com">email</a>
+    </div>
+    <div>rendered client-side, no build step · data refreshes daily</div>
+    <div style="margin-top:6px;opacity:0.75;font-size:11.5px;">forked and updated from <a href="https://github.com/AVIVASHISHTA29/AVIVASHISHTA29.github.io" target="_blank" rel="noopener">AVIVASHISHTA29/AVIVASHISHTA29.github.io</a></div>
+  </footer>
+
+</div>
+
+<div id="tooltip"></div>
+<canvas id="matrixCanvas" style="position:fixed;inset:0;z-index:1;pointer-events:none;display:none;"></canvas>
+
+<script>
+/* =========================================================================
+   Fallback contribution data (baked in at build time). If the live fetch to
+   raw.githubusercontent.com fails -- offline, CORS hiccup, whatever -- the
+   page still works and shows real numbers as of the last sync.
+   ========================================================================= */
+window.__FALLBACK_DATA = {"username":"YadnyeshSawant","generated_at":"2026-07-10T08:25:04Z","range":{"start":"2025-07-06","end":"2026-07-10"},"total_contributions":9467,"active_days":365,"avg_per_active_day":25.9,"current_streak":{"length":61,"start":"2026-05-10","end":"2026-07-09"},"longest_streak":{"length":141,"start":"2025-07-06","end":"2025-11-23"},"best_day":{"date":"2026-03-07","count":128},"monthly":[{"month":"2025-07","total":663},{"month":"2025-08","total":664},{"month":"2025-09","total":597},{"month":"2025-10","total":807},{"month":"2025-11","total":664},{"month":"2025-12","total":890},{"month":"2026-01","total":868},{"month":"2026-02","total":731},{"month":"2026-03","total":1270},{"month":"2026-04","total":776},{"month":"2026-05","total":782},{"month":"2026-06","total":585},{"month":"2026-07","total":170}],"days":[{"date":"2025-07-06","count":5},{"date":"2025-07-07","count":30},{"date":"2025-07-08","count":32},{"date":"2025-07-09","count":38},{"date":"2025-07-10","count":34},{"date":"2025-07-11","count":18},{"date":"2025-07-12","count":24},{"date":"2025-07-13","count":22},{"date":"2025-07-14","count":25},{"date":"2025-07-15","count":37},{"date":"2025-07-16","count":24},{"date":"2025-07-17","count":40},{"date":"2025-07-18","count":40},{"date":"2025-07-19","count":10},{"date":"2025-07-20","count":13},{"date":"2025-07-21","count":34},{"date":"2025-07-22","count":36},{"date":"2025-07-23","count":31},{"date":"2025-07-24","count":33},{"date":"2025-07-25","count":33},{"date":"2025-07-26","count":18},{"date":"2025-07-27","count":23},{"date":"2025-07-28","count":16},{"date":"2025-07-29","count":8},{"date":"2025-07-30","count":13},{"date":"2025-07-31","count":26},{"date":"2025-08-01","count":34},{"date":"2025-08-02","count":20},{"date":"2025-08-03","count":23},{"date":"2025-08-04","count":35},{"date":"2025-08-05","count":18},{"date":"2025-08-06","count":14},{"date":"2025-08-07","count":42},{"date":"2025-08-08","count":45},{"date":"2025-08-09","count":19},{"date":"2025-08-10","count":16},{"date":"2025-08-11","count":27},{"date":"2025-08-12","count":31},{"date":"2025-08-13","count":27},{"date":"2025-08-14","count":40},{"date":"2025-08-15","count":1},{"date":"2025-08-16","count":16},{"date":"2025-08-17","count":12},{"date":"2025-08-18","count":4},{"date":"2025-08-19","count":7},{"date":"2025-08-20","count":25},{"date":"2025-08-21","count":29},{"date":"2025-08-22","count":34},{"date":"2025-08-23","count":1},{"date":"2025-08-24","count":17},{"date":"2025-08-25","count":32},{"date":"2025-08-26","count":16},{"date":"2025-08-27","count":29},{"date":"2025-08-28","count":10},{"date":"2025-08-29","count":35},{"date":"2025-08-30","count":3},{"date":"2025-08-31","count":2},{"date":"2025-09-01","count":21},{"date":"2025-09-02","count":32},{"date":"2025-09-03","count":35},{"date":"2025-09-04","count":27},{"date":"2025-09-05","count":13},{"date":"2025-09-06","count":11},{"date":"2025-09-07","count":9},{"date":"2025-09-08","count":22},{"date":"2025-09-09","count":39},{"date":"2025-09-10","count":39},{"date":"2025-09-11","count":26},{"date":"2025-09-12","count":22},{"date":"2025-09-13","count":1},{"date":"2025-09-14","count":1},{"date":"2025-09-15","count":10},{"date":"2025-09-16","count":23},{"date":"2025-09-17","count":35},{"date":"2025-09-18","count":37},{"date":"2025-09-19","count":31},{"date":"2025-09-20","count":8},{"date":"2025-09-21","count":2},{"date":"2025-09-22","count":12},{"date":"2025-09-23","count":16},{"date":"2025-09-24","count":21},{"date":"2025-09-25","count":28},{"date":"2025-09-26","count":13},{"date":"2025-09-27","count":9},{"date":"2025-09-28","count":11},{"date":"2025-09-29","count":20},{"date":"2025-09-30","count":23},{"date":"2025-10-01","count":45},{"date":"2025-10-02","count":3},{"date":"2025-10-03","count":36},{"date":"2025-10-04","count":16},{"date":"2025-10-05","count":8},{"date":"2025-10-06","count":32},{"date":"2025-10-07","count":38},{"date":"2025-10-08","count":40},{"date":"2025-10-09","count":31},{"date":"2025-10-10","count":16},{"date":"2025-10-11","count":10},{"date":"2025-10-12","count":2},{"date":"2025-10-13","count":40},{"date":"2025-10-14","count":35},{"date":"2025-10-15","count":49},{"date":"2025-10-16","count":26},{"date":"2025-10-17","count":17},{"date":"2025-10-18","count":1},{"date":"2025-10-19","count":6},{"date":"2025-10-20","count":2},{"date":"2025-10-21","count":36},{"date":"2025-10-22","count":28},{"date":"2025-10-23","count":29},{"date":"2025-10-24","count":23},{"date":"2025-10-25","count":27},{"date":"2025-10-26","count":16},{"date":"2025-10-27","count":42},{"date":"2025-10-28","count":26},{"date":"2025-10-29","count":40},{"date":"2025-10-30","count":46},{"date":"2025-10-31","count":41},{"date":"2025-11-01","count":3},{"date":"2025-11-02","count":1},{"date":"2025-11-03","count":35},{"date":"2025-11-04","count":45},{"date":"2025-11-05","count":39},{"date":"2025-11-06","count":20},{"date":"2025-11-07","count":36},{"date":"2025-11-08","count":16},{"date":"2025-11-09","count":23},{"date":"2025-11-10","count":38},{"date":"2025-11-11","count":25},{"date":"2025-11-12","count":46},{"date":"2025-11-13","count":43},{"date":"2025-11-14","count":11},{"date":"2025-11-15","count":1},{"date":"2025-11-16","count":1},{"date":"2025-11-17","count":1},{"date":"2025-11-18","count":1},{"date":"2025-11-19","count":30},{"date":"2025-11-20","count":51},{"date":"2025-11-21","count":48},{"date":"2025-11-22","count":59},{"date":"2025-11-23","count":1},{"date":"2025-11-24","count":0},{"date":"2025-11-25","count":2},{"date":"2025-11-26","count":0},{"date":"2025-11-27","count":27},{"date":"2025-11-28","count":40},{"date":"2025-11-29","count":6},{"date":"2025-11-30","count":15},{"date":"2025-12-01","count":46},{"date":"2025-12-02","count":32},{"date":"2025-12-03","count":48},{"date":"2025-12-04","count":47},{"date":"2025-12-05","count":31},{"date":"2025-12-06","count":5},{"date":"2025-12-07","count":3},{"date":"2025-12-08","count":46},{"date":"2025-12-09","count":29},{"date":"2025-12-10","count":32},{"date":"2025-12-11","count":64},{"date":"2025-12-12","count":35},{"date":"2025-12-13","count":18},{"date":"2025-12-14","count":2},{"date":"2025-12-15","count":42},{"date":"2025-12-16","count":32},{"date":"2025-12-17","count":56},{"date":"2025-12-18","count":58},{"date":"2025-12-19","count":27},{"date":"2025-12-20","count":8},{"date":"2025-12-21","count":1},{"date":"2025-12-22","count":53},{"date":"2025-12-23","count":50},{"date":"2025-12-24","count":4},{"date":"2025-12-25","count":4},{"date":"2025-12-26","count":2},{"date":"2025-12-27","count":8},{"date":"2025-12-28","count":8},{"date":"2025-12-29","count":55},{"date":"2025-12-30","count":41},{"date":"2025-12-31","count":3},{"date":"2026-01-01","count":39},{"date":"2026-01-02","count":35},{"date":"2026-01-03","count":12},{"date":"2026-01-04","count":38},{"date":"2026-01-05","count":28},{"date":"2026-01-06","count":70},{"date":"2026-01-07","count":53},{"date":"2026-01-08","count":68},{"date":"2026-01-09","count":34},{"date":"2026-01-10","count":4},{"date":"2026-01-11","count":0},{"date":"2026-01-12","count":38},{"date":"2026-01-13","count":62},{"date":"2026-01-14","count":21},{"date":"2026-01-15","count":24},{"date":"2026-01-16","count":15},{"date":"2026-01-17","count":26},{"date":"2026-01-18","count":3},{"date":"2026-01-19","count":10},{"date":"2026-01-20","count":31},{"date":"2026-01-21","count":30},{"date":"2026-01-22","count":32},{"date":"2026-01-23","count":23},{"date":"2026-01-24","count":14},{"date":"2026-01-25","count":8},{"date":"2026-01-26","count":22},{"date":"2026-01-27","count":28},{"date":"2026-01-28","count":40},{"date":"2026-01-29","count":27},{"date":"2026-01-30","count":29},{"date":"2026-01-31","count":4},{"date":"2026-02-01","count":11},{"date":"2026-02-02","count":21},{"date":"2026-02-03","count":27},{"date":"2026-02-04","count":13},{"date":"2026-02-05","count":15},{"date":"2026-02-06","count":1},{"date":"2026-02-07","count":1},{"date":"2026-02-08","count":1},{"date":"2026-02-09","count":1},{"date":"2026-02-10","count":1},{"date":"2026-02-11","count":29},{"date":"2026-02-12","count":49},{"date":"2026-02-13","count":27},{"date":"2026-02-14","count":7},{"date":"2026-02-15","count":10},{"date":"2026-02-16","count":12},{"date":"2026-02-17","count":17},{"date":"2026-02-18","count":48},{"date":"2026-02-19","count":43},{"date":"2026-02-20","count":19},{"date":"2026-02-21","count":35},{"date":"2026-02-22","count":32},{"date":"2026-02-23","count":63},{"date":"2026-02-24","count":58},{"date":"2026-02-25","count":58},{"date":"2026-02-26","count":69},{"date":"2026-02-27","count":31},{"date":"2026-02-28","count":32},{"date":"2026-03-01","count":7},{"date":"2026-03-02","count":24},{"date":"2026-03-03","count":42},{"date":"2026-03-04","count":18},{"date":"2026-03-05","count":3},{"date":"2026-03-06","count":32},{"date":"2026-03-07","count":128},{"date":"2026-03-08","count":4},{"date":"2026-03-09","count":76},{"date":"2026-03-10","count":76},{"date":"2026-03-11","count":48},{"date":"2026-03-12","count":60},{"date":"2026-03-13","count":53},{"date":"2026-03-14","count":36},{"date":"2026-03-15","count":19},{"date":"2026-03-16","count":53},{"date":"2026-03-17","count":41},{"date":"2026-03-18","count":40},{"date":"2026-03-19","count":53},{"date":"2026-03-20","count":61},{"date":"2026-03-21","count":5},{"date":"2026-03-22","count":32},{"date":"2026-03-23","count":58},{"date":"2026-03-24","count":78},{"date":"2026-03-25","count":43},{"date":"2026-03-26","count":62},{"date":"2026-03-27","count":64},{"date":"2026-03-28","count":8},{"date":"2026-03-29","count":2},{"date":"2026-03-30","count":26},{"date":"2026-03-31","count":18},{"date":"2026-04-01","count":2},{"date":"2026-04-02","count":34},{"date":"2026-04-03","count":38},{"date":"2026-04-04","count":1},{"date":"2026-04-05","count":2},{"date":"2026-04-06","count":42},{"date":"2026-04-07","count":50},{"date":"2026-04-08","count":36},{"date":"2026-04-09","count":55},{"date":"2026-04-10","count":59},{"date":"2026-04-11","count":30},{"date":"2026-04-12","count":30},{"date":"2026-04-13","count":43},{"date":"2026-04-14","count":20},{"date":"2026-04-15","count":47},{"date":"2026-04-16","count":25},{"date":"2026-04-17","count":39},{"date":"2026-04-18","count":6},{"date":"2026-04-19","count":2},{"date":"2026-04-20","count":23},{"date":"2026-04-21","count":21},{"date":"2026-04-22","count":17},{"date":"2026-04-23","count":19},{"date":"2026-04-24","count":9},{"date":"2026-04-25","count":13},{"date":"2026-04-26","count":7},{"date":"2026-04-27","count":25},{"date":"2026-04-28","count":24},{"date":"2026-04-29","count":26},{"date":"2026-04-30","count":31},{"date":"2026-05-01","count":21},{"date":"2026-05-02","count":11},{"date":"2026-05-03","count":11},{"date":"2026-05-04","count":60},{"date":"2026-05-05","count":6},{"date":"2026-05-06","count":38},{"date":"2026-05-07","count":7},{"date":"2026-05-08","count":13},{"date":"2026-05-09","count":0},{"date":"2026-05-10","count":5},{"date":"2026-05-11","count":37},{"date":"2026-05-12","count":24},{"date":"2026-05-13","count":7},{"date":"2026-05-14","count":20},{"date":"2026-05-15","count":25},{"date":"2026-05-16","count":19},{"date":"2026-05-17","count":10},{"date":"2026-05-18","count":29},{"date":"2026-05-19","count":8},{"date":"2026-05-20","count":33},{"date":"2026-05-21","count":31},{"date":"2026-05-22","count":31},{"date":"2026-05-23","count":32},{"date":"2026-05-24","count":19},{"date":"2026-05-25","count":22},{"date":"2026-05-26","count":20},{"date":"2026-05-27","count":49},{"date":"2026-05-28","count":81},{"date":"2026-05-29","count":52},{"date":"2026-05-30","count":20},{"date":"2026-05-31","count":41},{"date":"2026-06-01","count":35},{"date":"2026-06-02","count":12},{"date":"2026-06-03","count":21},{"date":"2026-06-04","count":38},{"date":"2026-06-05","count":12},{"date":"2026-06-06","count":1},{"date":"2026-06-07","count":6},{"date":"2026-06-08","count":6},{"date":"2026-06-09","count":41},{"date":"2026-06-10","count":49},{"date":"2026-06-11","count":23},{"date":"2026-06-12","count":64},{"date":"2026-06-13","count":10},{"date":"2026-06-14","count":16},{"date":"2026-06-15","count":25},{"date":"2026-06-16","count":14},{"date":"2026-06-17","count":33},{"date":"2026-06-18","count":23},{"date":"2026-06-19","count":40},{"date":"2026-06-20","count":10},{"date":"2026-06-21","count":1},{"date":"2026-06-22","count":19},{"date":"2026-06-23","count":16},{"date":"2026-06-24","count":13},{"date":"2026-06-25","count":19},{"date":"2026-06-26","count":7},{"date":"2026-06-27","count":4},{"date":"2026-06-28","count":2},{"date":"2026-06-29","count":15},{"date":"2026-06-30","count":10},{"date":"2026-07-01","count":25},{"date":"2026-07-02","count":48},{"date":"2026-07-03","count":7},{"date":"2026-07-04","count":8},{"date":"2026-07-05","count":2},{"date":"2026-07-06","count":23},{"date":"2026-07-07","count":10},{"date":"2026-07-08","count":23},{"date":"2026-07-09","count":24},{"date":"2026-07-10","count":0}]};
+
+const LIVE_DATA_URL = "https://raw.githubusercontent.com/YadnyeshSawant/YadnyeshSawant/main/data/contributions.json";
+
+/* ---------------------------------------------------------------------- */
+const term = document.getElementById("term");
+const input = document.getElementById("cmdInput");
+const tooltip = document.getElementById("tooltip");
+
+function line(html, cls) {
+  const div = document.createElement("div");
+  div.className = "line" + (cls ? " " + cls : "");
+  div.innerHTML = html;
+  term.appendChild(div);
+  term.scrollTop = term.scrollHeight;
+  return div;
+}
+function blank() { line("&nbsp;"); }
+
+let DATA = null;
+window.__getData = () => DATA; // test/debug hook
+
+async function loadData() {
+  try {
+    const res = await fetch(LIVE_DATA_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("bad status " + res.status);
+    DATA = await res.json();
+  } catch (e) {
+    DATA = window.__FALLBACK_DATA;
+  }
+  renderStats();
+}
+
+/* ---------------------------------------------------------------------- */
+function countUp(el, target, suffix) {
+  const dur = 900;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min(1, (now - start) / dur);
+    const val = Math.round(target * (1 - Math.pow(1 - p, 3)));
+    el.textContent = val.toLocaleString() + (suffix || "");
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function renderStats() {
+  if (!DATA) return;
+  const box = document.getElementById("statsBox");
+  if (!box) return;
+  const stats = [
+    ["total", DATA.total_contributions, "contributions"],
+    ["current", DATA.current_streak.length, "day streak"],
+    ["longest", DATA.longest_streak.length, "day best streak"],
+    ["best", DATA.best_day.count, "in one day"],
+  ];
+  box.innerHTML = "";
+  stats.forEach(([key, val, label]) => {
+    const card = document.createElement("div");
+    card.className = "stat";
+    card.innerHTML = `<div class="num" data-key="${key}">0</div><div class="lbl">${label}</div>`;
+    box.appendChild(card);
+    countUp(card.querySelector(".num"), val);
+  });
+}
+
+/* ---------------------------------------------------------------------- */
+function levelFor(count) {
+  if (count === 0) return 0;
+  if (count <= 5) return 1;
+  if (count <= 15) return 2;
+  if (count <= 30) return 3;
+  if (count <= 50) return 4;
+  return 5;
+}
+const PALETTE = ["#1c2128", "#0e4429", "#146c37", "#26a648", "#39d353", "#7cf2a0"];
+
+function buildHeatmapEl() {
+  const wrap = document.createElement("div");
+  wrap.className = "heatmap-wrap";
+  const grid = document.createElement("div");
+  grid.className = "heatmap";
+
+  const days = DATA.days;
+  const first = new Date(days[0].date + "T00:00:00");
+  const leadPad = (first.getDay()); // sunday=0 already
+  let col = new Array(leadPad).fill(null);
+
+  const cols = [];
+  days.forEach((d) => {
+    const date = new Date(d.date + "T00:00:00");
+    const weekday = date.getDay();
+    while (col.length < weekday) col.push(null);
+    col.push(d);
+    if (col.length === 7) { cols.push(col); col = []; }
+  });
+  if (col.length) { while (col.length < 7) col.push(null); cols.push(col); }
+
+  cols.forEach((column) => {
+    column.forEach((d) => {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      if (!d) {
+        cell.style.background = "transparent";
+        cell.style.cursor = "default";
+      } else {
+        const lvl = levelFor(d.count);
+        cell.style.background = PALETTE[lvl];
+        cell.addEventListener("mousemove", (e) => {
+          tooltip.style.display = "block";
+          tooltip.style.left = e.clientX + 14 + "px";
+          tooltip.style.top = e.clientY + 14 + "px";
+          tooltip.textContent = `${d.date}: ${d.count} contribution${d.count === 1 ? "" : "s"}`;
+        });
+        cell.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
+      }
+      grid.appendChild(cell);
+    });
+  });
+
+  wrap.appendChild(grid);
+
+  const legend = document.createElement("div");
+  legend.className = "legend";
+  legend.innerHTML = "less ";
+  PALETTE.forEach((c) => {
+    legend.innerHTML += `<span class="cell" style="background:${c}"></span> `;
+  });
+  legend.innerHTML += " more";
+  wrap.appendChild(legend);
+
+  return wrap;
+}
+
+/* ---------------------------------------------------------------------- */
+const COMMANDS = {
+  help() {
+    line(`<span class="out-white">available commands:</span>`);
+    [
+      ["whoami", "who is this guy anyway"],
+      ["portfolio", "redirect to GUI portfolio website"],
+      ["theme", "change terminal theme (1: Default, 2: PowerShell, 3: Ubuntu, 4: macOS)"],
+      ["flscr", "toggle full window mode (press ESC to exit)"],
+      ["credits", "view original repo credits & attribution"],
+      ["resume", "open PDF resume in new tab"],
+      ["education", "academic background"],
+      ["skills", "technical skills"],
+      ["projects", "things I've built"],
+      ["certifications", "certifications & credentials"],
+      ["contributions", "live GitHub contribution heatmap"],
+      ["streak", "current / longest streak"],
+      ["contact", "how to reach me"],
+      ["matrix", "toggle a little fun"],
+      ["clear", "clear the terminal"],
+    ].forEach(([c, d]) => line(`  <span class="out-cmd">${c.padEnd(15)}</span><span class="out-dim">${d}</span>`));
+  },
+  whoami() {
+    line(`<span class="out-white">Yadnyesh Sawant — MCA Student @ MIT-WPU, Pune | Backend Developer</span>`);
+    // blank();
+    line(`<span class="out-green">Currently:</span>`);
+    line(`<span class="out-dim">  ├─ </span><span class="out-white">Data Engineer Intern @ Celebal Technologies (CEI)</span>`);
+    line(`<span class="out-dim">  └─ </span><span class="out-white">Student Placement Representative @ MIT-WPU</span>`);
+    // blank();
+    line(`<span class="out-dim">Building scalable backend systems and data solutions with Java, Spring Boot, PostgreSQL, Python, Azure, Docker, and REST APIs.</span>`);
+    // blank();
+    line(`<span class="out-dim">Exploring AI, cloud computing, and system design—one project at a time.</span>`);
+  },
+  portfolio() {
+    line(`<span class="out-yellow">Do you want to visit Yadnyesh's portfolio website? [y/n]</span>`);
+    pendingAction = "portfolio";
+  },
+  resume() {
+    line(`<span class="out-yellow">Do you want to open Yadnyesh's resume? [y/n]</span>`);
+    pendingAction = "resume";
+  },
+  education() {
+    line(`<span class="out-white">ACADEMIC BACKGROUND:</span>`);
+    [
+      ["2025 - 2027", "MCA", "MIT World Peace University (MIT-WPU), Pune"],
+      ["2022 - 2025", "B.Sc. Computer Science", "KVN Naik College, Nashik (CGPA: 8.42 / 10)"],
+      ["2020 - 2022", "HSC (12th Science)", "High School / Junior College, Nashik"],
+      ["2019 - 2020", "SSC (10th Board)", "Secondary School, Nashik"],
+    ].forEach(([d, r, c], i, arr) => {
+      const branch = i === arr.length - 1 ? "└─" : "├─";
+      line(`<span class="out-dim">  ${branch} </span><span class="out-green">${d.padEnd(13)}</span><span class="out-white">${r.padEnd(26)}</span><span class="out-dim">${c}</span>`);
+    });
+  },
+  experience() {
+    COMMANDS.education();
+  },
+  skills() {
+    line(`<span class="out-white">TECHNICAL SKILLS & COMPETENCIES:</span>`);
+    [
+      ["languages", "Java, Python, C, JavaScript, HTML/CSS, SQL"],
+      ["frameworks", "Spring Boot, Hibernate, Servlets, AWT, Swing"],
+      ["databases", "PostgreSQL, MySQL"],
+      ["ai / ml", "Prompt Engineering, NLP (Paraphrasing, SQuAD), Hugging Face Transformers"],
+      ["tools", "Git, GitHub, Postman API, VS Code, IntelliJ IDEA"],
+      ["core", "Data Structures & Algorithms, OOP, RESTful APIs, CRUD Operations, ORM"],
+    ].forEach(([cat, items], i, arr) => {
+      const branch = i === arr.length - 1 ? "└─" : "├─";
+      line(`<span class="out-dim">  ${branch} </span><span class="out-cmd">${cat.padEnd(12)}</span><span class="out-white">${items}</span>`);
+    });
+  },
+  projects() {
+    line(`<span class="out-white">PROJECTS OVERVIEW (6 total):</span>`);
+    blank();
+
+    const items = [
+      {
+        title: "BOOK-n-JOY: Event Ticket Booking Platform",
+        role: "Backend Developer",
+        status: "Completed",
+        timeline: "Dec 2024 – Feb 2025 (3 Months)",
+        fullTech: "Linux, Java, Spring Boot, Maven, Tomcat, PostgreSQL, Bootstrap, JavaScript, Git",
+        desc: "Web-based platform for discovering events, booking tickets, and managing registrations.",
+        url: "https://github.com/theujwalthakare/aaomile",
+        contributors: [
+          { name: "Ujwal Thakare", role: "Frontend Developer", linkedin: "https://www.linkedin.com/in/ujwal-thakare-300b25264/" },
+          { name: "Yadnyesh Sawant", role: "Backend Developer", linkedin: "https://www.linkedin.com/in/yadnyesh-sawant/" }
+        ]
+      },
+      {
+        title: "Python Program Executor with Version Control",
+        role: "Project Developer",
+        status: "Completed",
+        timeline: "Sep 2025 – Oct 2025",
+        fullTech: "Java, Swing, Git, Maven, Python, Git Bash, Figma",
+        desc: "Desktop IDE for writing, executing, and managing Python code with integrated Git support.",
+        url: "https://github.com/YadnyeshSawant/Installers/releases/tag/v2.1.1-beta",
+        contributors: [
+          { name: "Yadnyesh Sawant", role: "Java Developer", linkedin: "https://www.linkedin.com/in/yadnyesh-sawant/" }
+        ]
+      },
+      {
+        title: "CodeLabs: Code Testing Application",
+        role: "Backend Developer",
+        status: "Completed",
+        timeline: "2 Months",
+        fullTech: "Java, Swing, Git, Maven, Socket Programming, Client-Server",
+        desc: "Client-server application for remotely compiling, executing, and testing code.",
+        url: "https://github.com/YadnyeshSawant/CodingTestApp",
+        contributors: [
+          { name: "Yadnyesh Sawant", role: "Backend Developer", linkedin: "https://www.linkedin.com/in/yadnyesh-sawant/" }
+        ]
+      },
+      {
+        title: "Placement Portal: Job & Application Management System",
+        role: "Backend Developer",
+        status: "Under Development",
+        timeline: "2 Months",
+        fullTech: "Java, Servlets, JSP, Tailwind CSS, Client-Server",
+        desc: "Web portal streamlining student placements, job applications, and recruiter interactions.",
+        url: "https://github.com/YadnyeshSawant/PlacementPotral",
+        contributors: [
+          { name: "Dr. Dinesh Banswal", role: "Faculty Mentor", linkedin: "https://www.linkedin.com/in/dinesh-banswal/" },
+          { name: "Yadnyesh Sawant", role: "Backend Developer", linkedin: "https://www.linkedin.com/in/yadnyesh-sawant/" }
+        ]
+      },
+      {
+        title: "Wellness Tracker",
+        role: "Technical Advisor",
+        status: "Completed",
+        timeline: "Dec 2024 – Feb 2025 (3 Months)",
+        fullTech: "Linux, Java, Spring Boot, Maven, Tomcat, PostgreSQL, Bootstrap, JavaScript, Git",
+        desc: "Web application for tracking daily wellness activities and monitoring overall health.",
+        url: "https://github.com/theujwalthakare/aaomile",
+        contributors: [
+          { name: "Dr. Dinesh Banswal", role: "Faculty Mentor", linkedin: "https://www.linkedin.com/in/dinesh-banswal/" },
+          { name: "Rujuta Dani", role: "Full Stack Developer", linkedin: "https://www.linkedin.com/in/rujuta-dani-b000662b3/" },
+          { name: "Yadnyesh Sawant", role: "Technical Advisor", linkedin: "https://www.linkedin.com/in/yadnyesh-sawant/" }
+        ]
+      },
+      {
+        title: "SPOTFIX: Citizen Government Issue Reporting Platform",
+        role: "Backend Developer",
+        status: "Under Development",
+        timeline: "March 2025",
+        fullTech: "Java, Dynamic Web App, STS, Tomcat, MySQL, Tailwind CSS, JavaScript, Git, JSP, Servlet",
+        desc: "Citizen-government platform for reporting civic issues and tracking resolution.",
+        url: "https://github.com/YadnyeshSawant/SPOTFIX",
+        contributors: [
+          { name: "Yadnyesh Sawant", role: "Backend Developer", linkedin: "https://www.linkedin.com/in/yadnyesh-sawant/" },
+          { name: "Rashita Gomes", role: "Frontend Developer", linkedin: "https://www.linkedin.com/in/rashita-gomes-10200325a/" }
+        ]
+      }
+    ];
+
+    items.forEach((p, idx) => {
+      line(`<span class="out-cmd">&gt; ${p.title}</span>`);
+      line(`<span class="out-dim">  ├─ Role:         </span><span class="out-green">${p.role}</span>`);
+      const statusCls = p.status === "Completed" ? "out-cyan" : "out-yellow";
+      line(`<span class="out-dim">  ├─ Status:       </span><span class="${statusCls}">${p.status}</span>`);
+      line(`<span class="out-dim">  ├─ Timeline:     </span><span class="out-white">${p.timeline}</span>`);
+      line(`<span class="out-dim">  ├─ Description:  </span><span class="out-white">${p.desc}</span>`);
+      line(`<span class="out-dim">  ├─ Tech Stack:   </span><span class="out-dim">${p.fullTech}</span>`);
+      line(`<span class="out-dim">  ├─ Repository:   </span><a href="${p.url}" target="_blank" rel="noopener">${p.url}</a>`);
+      const contribsStr = p.contributors
+        .map((c) => `<a href="${c.linkedin}" target="_blank" rel="noopener">${c.name}</a> (${c.role})`)
+        .join(", ");
+      line(`<span class="out-dim">  └─ Contributors: </span>${contribsStr}`);
+      if (idx < items.length - 1) blank();
+    });
+  },
+  certifications() {
+    line(`<span class="out-white">CERTIFICATIONS & CREDENTIALS (8 total):</span>`);
+    const certs = [
+      { date: "May 2026", title: "MongoDB Overview: Core Concepts & Architecture", issuer: "MongoDB", verifyUrl: "https://www.credly.com/badges/979846e9-7319-4e01-839b-32921db7b06f" },
+      { date: "Mar 2026", title: "Claude Code In Action", issuer: "Anthropic", verifyUrl: "https://verify.skilljar.com/c/jrp6zvdqqf77" },
+      { date: "Dec 2025", title: "AWS - Solutions Architecture Job Simulation", issuer: "Forage / AWS", verifyUrl: "https://www.theforage.com/completion-certificates/pmnMSL4QiQ9JCgE3W/kkE9HyeNcw6rwCRGw_pmnMSL4QiQ9JCgE3W_693bf797678e25f55c6b4042_1765541546153_completion_certificate.pdf" },
+      { date: "Nov 2025", title: "Workshop on Generative and Agentic AI", issuer: "Nova GenX Labs", verifyUrl: "" },
+      { date: "Nov 2025", title: "Networking Basics – Cisco NetAcad", issuer: "Microsoft", verifyUrl: "https://www.netacad.com/courses/networking/networking-basics" },
+      { date: "Aug 2025", title: "Career Essentials in Generative AI", issuer: "Microsoft & LinkedIn Learning", verifyUrl: "https://www.linkedin.com/learning/certificates/d6f5a277ce8f818b02d1dc4f9928a1806197106e9435ab9060355493d95a7a22?trk=share_certificate" },
+      { date: "Jul 2024", title: "Postman API Fundamentals Student Expert", issuer: "Postman / LetsUpgrade", verifyUrl: "https://badgr.com/public/assertions/k1P6vyNBRWaOiWRX17ApdA?identity__email=yadnyesh2018%40gmail.com" },
+      { date: "Jun 2024", title: "Git and GitHub Bootcamp", issuer: "LetsUpgrade", verifyUrl: "https://verify.letsupgrade.in/certificate/LUEGGAPR1241389" },
+    ];
+
+    certs.forEach((c, i) => {
+      const isLast = i === certs.length - 1;
+      const branchMain = isLast ? "└─" : "├─";
+      const branchSub = isLast ? "  " : "│ ";
+      line(`<span class="out-dim">  ${branchMain} </span><span class="out-cyan">${c.date.padEnd(11)}</span><span class="out-green">${c.title}</span> <span class="out-white">(${c.issuer})</span>`);
+      if (c.verifyUrl) {
+        line(`<span class="out-dim">  ${branchSub}  └─ Verification: </span><a href="${c.verifyUrl}" target="_blank" rel="noopener">[Verify Credential]</a>`);
+      } else {
+        line(`<span class="out-dim">  ${branchSub}  └─ Verification: </span><span class="out-dim">[Internal Workshop]</span>`);
+      }
+    });
+  },
+  contact() {
+    line(`<span class="out-white">CONTACT & SOCIAL PROFILES:</span>`);
+    [
+      ["email", '<a href="mailto:yadnyesh2018@gmail.com">yadnyesh2018@gmail.com</a>'],
+      ["phone", '<span class="out-dim">+91-8888047246 (Pune, IN)</span>'],
+      ["github", '<a href="https://github.com/YadnyeshSawant" target="_blank">github.com/YadnyeshSawant</a>'],
+      ["linkedin", '<a href="https://linkedin.com/in/yadnyesh-sawant" target="_blank">linkedin.com/in/yadnyesh-sawant</a>'],
+      ["leetcode", '<a href="https://leetcode.com/yadnyesh" target="_blank">leetcode.com/yadnyesh</a>'],
+    ].forEach(([k, v], i, arr) => {
+      const branch = i === arr.length - 1 ? "└─" : "├─";
+      line(`<span class="out-dim">  ${branch} </span><span class="out-white">${k.padEnd(10)}</span>${v}`);
+    });
+  },
+  photo() {
+    line(`<span class="out-dim">view profile photo on github.com/YadnyeshSawant</span>`);
+  },
+  streak() {
+    if (!DATA) { line(`<span class="out-dim">loading contribution data...</span>`); return; }
+    line(`<span class="out-green">current streak:</span>  ${DATA.current_streak.length} days (${DATA.current_streak.start} → ${DATA.current_streak.end})`);
+    line(`<span class="out-green">longest streak:</span>  ${DATA.longest_streak.length} days (${DATA.longest_streak.start} → ${DATA.longest_streak.end})`);
+    line(`<span class="out-green">best day:</span>       ${DATA.best_day.count} contributions on ${DATA.best_day.date}`);
+    line(`<span class="out-green">total:</span>          ${DATA.total_contributions.toLocaleString()} contributions since ${DATA.range.start}`);
+  },
+  contributions() {
+    if (!DATA) { line(`<span class="out-dim">loading contribution data...</span>`); return; }
+    line(`<span class="out-dim">${DATA.total_contributions.toLocaleString()} contributions · ${DATA.range.start} → ${DATA.range.end}</span>`);
+    const div = document.createElement("div");
+    div.className = "line";
+    div.appendChild(buildHeatmapEl());
+    term.appendChild(div);
+    term.scrollTop = term.scrollHeight;
+    line(`<span class="out-dim">hover a cell for the exact date and count</span>`);
+  },
+  flscr() {
+    toggleFullscreen();
+  },
+  fullscreen() {
+    toggleFullscreen();
+  },
+  credits() {
+    line(`<span class="out-white">ATTRIBUTION & CREDITS:</span>`);
+    line(`<span class="out-dim">  ├─ Original Repository: </span><a href="https://github.com/AVIVASHISHTA29/AVIVASHISHTA29.github.io" target="_blank" rel="noopener">AVIVASHISHTA29/AVIVASHISHTA29.github.io</a>`);
+    line(`<span class="out-dim">  └─ Customization:       </span><span class="out-green">Forked, enhanced & maintained by Yadnyesh Sawant</span>`);
+  },
+  theme(args) {
+    if (args && args.length > 0) {
+      const selected = setTheme(args[0]);
+      if (selected) {
+        line(`<span class="out-green">switched theme to ${selected}</span>`);
+      } else {
+        line(`<span class="out-yellow">invalid theme. options: 1 (Default), 2 (Windows PowerShell), 3 (Ubuntu), 4 (macOS)</span>`);
+      }
+      return;
+    }
+
+    line(`<span class="out-white">SELECT A TERMINAL THEME:</span>`);
+    line(`<span class="out-dim">  1. Default (GitHub Dark)</span>`);
+    line(`<span class="out-dim">  2. Windows PowerShell</span>`);
+    line(`<span class="out-dim">  3. Ubuntu</span>`);
+    line(`<span class="out-dim">  4. macOS Terminal</span>`);
+    line(`<span class="out-yellow">type 1, 2, 3, or 4 to select theme:</span>`);
+    pendingAction = "theme";
+  },
+  matrix() {
+    toggleMatrix();
+    line(`<span class="out-dim">${matrixOn ? "matrix mode on -- type 'matrix' again to turn it off" : "back to normal"}</span>`);
+  },
+  clear() {
+    term.innerHTML = "";
+  },
+  banner() {
+    COMMANDS.whoami();
+  },
+  sudo(args) {
+    line(`<span class="out-yellow">[sudo] password for yadnyesh:</span> <span class="out-dim">nice try. this is a static site.</span>`);
+  },
+};
+COMMANDS["about"] = COMMANDS.whoami;
+COMMANDS["ls"] = COMMANDS.projects;
+
+let pendingAction = null;
+function endOutput(code = 0) {
+  if (pendingAction) {
+    line(`<span class="out-yellow" style="font-size:11px;letter-spacing:0.06em;">───── [ Waiting for User Input ] ─────</span>`);
+  } else if (code === 0) {
+    line(`<span class="out-dim" style="font-size:11px;letter-spacing:0.06em;">───── [ Task Completed ] ─────</span>`);
+  } else if (code === 1) {
+    line(`<span class="out-dim" style="font-size:11px;letter-spacing:0.06em;">───── [ Task Cancelled ] ─────</span>`);
+  } else {
+    line(`<span class="out-yellow" style="font-size:11px;letter-spacing:0.06em;">───── [ Task Failed ] ─────</span>`);
+  }
+}
+
+let currentPromptTag = "yadnyesh@github:~$";
+let currentTheme = "default";
+
+function setTheme(themeKey) {
+  const key = (themeKey || "").toLowerCase().trim();
+  const titleEl = document.getElementById("titlebarLabel");
+  const promptEl = document.getElementById("inputRowTag");
+
+  currentPromptTag = "yadnyesh@github:~$";
+  if (titleEl) titleEl.textContent = "yadnyesh@github: ~";
+  if (promptEl) promptEl.textContent = "yadnyesh@github:~$";
+
+  if (key === "1" || key === "default" || key === "github") {
+    currentTheme = "default";
+    document.body.removeAttribute("data-theme");
+    return "Default (GitHub Dark)";
+  } else if (key === "2" || key === "powershell" || key === "pwsh" || key === "windows") {
+    currentTheme = "powershell";
+    document.body.setAttribute("data-theme", "powershell");
+    return "Windows PowerShell";
+  } else if (key === "3" || key === "ubuntu" || key === "linux") {
+    currentTheme = "ubuntu";
+    document.body.setAttribute("data-theme", "ubuntu");
+    return "Ubuntu";
+  } else if (key === "4" || key === "macos" || key === "mac" || key === "zsh" || key === "apple") {
+    currentTheme = "macos";
+    document.body.setAttribute("data-theme", "macos");
+    return "macOS Terminal";
+  }
+  return null;
+}
+
+function runCommand(raw) {
+  const trimmed = raw.trim();
+  line(`<span class="prompt-tag">${currentPromptTag}</span> <span class="out-white">${escapeHtml(trimmed)}</span>`, "prompt-line");
+  if (!trimmed) return;
+
+  if (pendingAction === "resume") {
+    const choice = trimmed.toLowerCase();
+    pendingAction = null;
+    if (choice === "y" || choice === "yes") {
+      line(`<span class="out-green">opening resume in a new tab...</span>`);
+      window.open("./Yadnyesh_Resume.pdf", "_blank");
+      endOutput(0);
+    } else {
+      line(`<span class="out-dim">cancelled.</span>`);
+      endOutput(1);
+    }
+    return;
+  }
+
+  if (pendingAction === "portfolio") {
+    const choice = trimmed.toLowerCase();
+    pendingAction = null;
+    if (choice === "y" || choice === "yes") {
+      line(`<span class="out-green">redirecting to https://yadnyeshsawant.vercel.app/...</span>`);
+      window.open("https://yadnyeshsawant.vercel.app/", "_blank");
+      endOutput(0);
+    } else {
+      line(`<span class="out-dim">cancelled.</span>`);
+      endOutput(1);
+    }
+    return;
+  }
+
+  if (pendingAction === "theme") {
+    const choice = trimmed.toLowerCase();
+    pendingAction = null;
+    const selected = setTheme(choice);
+    if (selected) {
+      line(`<span class="out-green">switched theme to ${selected}</span>`);
+      endOutput(0);
+    } else {
+      line(`<span class="out-dim">invalid theme choice. cancelled.</span>`);
+      endOutput(1);
+    }
+    return;
+  }
+
+  const [cmd, ...args] = trimmed.split(/\s+/);
+  const key = cmd.toLowerCase();
+
+  if (key === "clear") {
+    COMMANDS.clear();
+    return;
+  }
+
+  if (key === "open") {
+    const target = (args[0] || "").toLowerCase();
+    if (target === "resume") {
+      COMMANDS.resume();
+      return;
+    }
+    if (target === "portfolio") {
+      COMMANDS.portfolio();
+      return;
+    }
+    const map = {
+      github: "https://github.com/YadnyeshSawant",
+      linkedin: "https://linkedin.com/in/yadnyesh-sawant",
+      leetcode: "https://leetcode.com/yadnyesh",
+    };
+    if (map[target]) {
+      line(`<span class="out-dim">opening ${target}...</span>`);
+      window.open(map[target], "_blank");
+      endOutput(0);
+    } else {
+      line(`<span class="out-dim">usage: open [resume|github|linkedin|leetcode]</span>`);
+      endOutput(127);
+    }
+    return;
+  }
+
+  if (COMMANDS[key]) {
+    COMMANDS[key](args);
+    endOutput(0);
+  } else {
+    line(`<span class="out-dim">command not found: ${escapeHtml(cmd)} — type 'help'</span>`);
+    endOutput(127);
+  }
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const val = input.value;
+    input.value = "";
+    runCommand(val);
+  } else if (e.key === "Escape" && isFullscreen) {
+    toggleFullscreen(false);
+  }
+});
+document.addEventListener("click", () => input.focus());
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && isFullscreen) {
+    toggleFullscreen(false);
+  }
+});
+
+let isFullscreen = false;
+function toggleFullscreen(enable) {
+  if (enable === undefined) {
+    isFullscreen = !isFullscreen;
+  } else {
+    isFullscreen = enable;
+  }
+  if (isFullscreen) {
+    document.body.classList.add("fullscreen-mode");
+    line(`<span class="out-dim">full window mode enabled — press <kbd>ESC</kbd> or type 'flscr' to exit</span>`);
+  } else {
+    document.body.classList.remove("fullscreen-mode");
+    line(`<span class="out-dim">exited full window mode</span>`);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+let matrixOn = false;
+let matrixAnimId = null;
+
+function toggleMatrix() {
+  matrixOn = !matrixOn;
+  const canvas = document.getElementById("matrixCanvas");
+  canvas.style.display = matrixOn ? "block" : "none";
+  if (matrixOn) {
+    startMatrix();
+  } else if (matrixAnimId) {
+    cancelAnimationFrame(matrixAnimId);
+    matrixAnimId = null;
+  }
+}
+
+function startMatrix() {
+  const canvas = document.getElementById("matrixCanvas");
+  const ctx = canvas.getContext && canvas.getContext("2d");
+  if (!ctx) return;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+
+  const cols = Math.floor(canvas.width / 16) + 1;
+  const drops = new Array(cols).fill(0).map(() => Math.floor(Math.random() * -30));
+  const chars = "01YADNYESHSAWANT<>/{}[]#*JAVA";
+
+  function draw() {
+    if (!matrixOn) return;
+    ctx.fillStyle = "rgba(13, 17, 23, 0.15)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#39d353";
+    ctx.font = "14px monospace";
+
+    drops.forEach((y, i) => {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(ch, i * 16, y * 16);
+      if (y * 16 > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      } else {
+        drops[i]++;
+      }
+    });
+
+    matrixAnimId = requestAnimationFrame(draw);
+  }
+
+  if (matrixAnimId) cancelAnimationFrame(matrixAnimId);
+  draw();
+}
+
+/* ---------------------------------------------------------------------- */
+function boot() {
+  line(`<span class="out-green">connected to github.com/YadnyeshSawant</span>`);
+  line(`<span class="out-dim">type 'help' to see available commands</span>`);
+  blank();
+
+  const statsWrap = document.createElement("div");
+  statsWrap.className = "line";
+  statsWrap.innerHTML = `<div class="stats" id="statsBox"></div>`;
+  term.appendChild(statsWrap);
+
+  blank();
+  runCommand("whoami");
+  input.focus();
+}
+
+loadData();
+boot();
+</script>
+</body>
+</html>

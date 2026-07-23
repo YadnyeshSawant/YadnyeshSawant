@@ -1,0 +1,178 @@
+{
+  "projects": [
+    {
+      "title": "BOOK-n-JOY: Event Ticket Booking Platform",
+      "technologies": [
+        "Linux",
+        "Java",
+        "Spring Boot",
+        "Maven",
+        "Tomcat",
+        "PostgreSQL",
+        "Bootstrap",
+        "JavaScript",
+        "Git"
+      ],
+      "description": "A web-based platform for discovering events, booking tickets, and managing event registrations.",
+      "role": "Backend Developer",
+      "timeline": "Dec 2024 – Feb 2025 (3 Months)",
+      "status": "Completed",
+      "sourceCode": "https://github.com/theujwalthakare/aaomile",
+      "contributors": [
+        {
+          "name": "Ujwal Thakare",
+          "role": "Frontend Developer",
+          "linkedin": "https://www.linkedin.com/in/ujwal-thakare-300b25264/"
+        },
+        {
+          "name": "Yadnyesh Sawant",
+          "role": "Backend Developer",
+          "linkedin": "https://www.linkedin.com/in/yadnyesh-sawant/"
+        }
+      ]
+    },
+    {
+      "title": "Python Program Executor with Version Control Implementation",
+      "technologies": [
+        "Java",
+        "Swing",
+        "Git",
+        "Maven",
+        "Python",
+        "Git Bash",
+        "Figma"
+      ],
+      "description": "A desktop IDE for writing, executing, and managing Python programs with integrated Git support.",
+      "role": "Project Developer",
+      "timeline": "Sep 2025 – Oct 2025",
+      "status": "Completed",
+      "sourceCode": "https://github.com/YadnyeshSawant/Installers/releases/tag/v2.1.1-beta",
+      "contributors": [
+        {
+          "name": "Yadnyesh Sawant",
+          "role": "Java Developer",
+          "linkedin": "https://www.linkedin.com/in/yadnyesh-sawant/"
+        }
+      ]
+    },
+    {
+      "title": "CodeLabs: Code Testing Application",
+      "technologies": [
+        "Java",
+        "Swing",
+        "Git",
+        "Maven",
+        "Socket Programming",
+        "Client-Server"
+      ],
+      "description": "A client-server application for remotely compiling, executing, and testing code.",
+      "role": "Backend Developer",
+      "timeline": "2 Months",
+      "status": "Completed",
+      "sourceCode": "https://github.com/YadnyeshSawant/CodingTestApp",
+      "contributors": [
+        {
+          "name": "Yadnyesh Sawant",
+          "role": "Backend Developer",
+          "linkedin": "https://www.linkedin.com/in/yadnyesh-sawant/"
+        }
+      ]
+    },
+    {
+      "title": "Placement Portal: Student Job & Application Management System",
+      "technologies": [
+        "Java",
+        "Servlets",
+        "JSP",
+        "Tailwind CSS",
+        "Client-Server"
+      ],
+      "description": "A web portal that streamlines student placements, job applications, and recruiter interactions.",
+      "role": "Backend Developer",
+      "timeline": "2 Months",
+      "status": "Under Development",
+      "sourceCode": "https://github.com/YadnyeshSawant/PlacementPotral",
+      "contributors": [
+        {
+          "name": "Dr. Dinesh Banswal",
+          "role": "Faculty Project Mentor",
+          "linkedin": "https://www.linkedin.com/in/dinesh-banswal/"
+        },
+        {
+          "name": "Yadnyesh Sawant",
+          "role": "Backend Developer",
+          "linkedin": "https://www.linkedin.com/in/yadnyesh-sawant/"
+        }
+      ]
+    },
+    {
+      "title": "Wellness Tracker",
+      "technologies": [
+        "Linux",
+        "Java",
+        "Spring Boot",
+        "Maven",
+        "Tomcat",
+        "PostgreSQL",
+        "Bootstrap",
+        "JavaScript",
+        "Git"
+      ],
+      "description": "A web application for tracking daily wellness activities and monitoring overall health.",
+      "role": "Technical Advisor",
+      "timeline": "Dec 2024 – Feb 2025 (3 Months)",
+      "status": "Completed",
+      "sourceCode": "https://github.com/theujwalthakare/aaomile",
+      "contributors": [
+        {
+          "name": "Dr. Dinesh Banswal",
+          "role": "Faculty Project Mentor",
+          "linkedin": "https://www.linkedin.com/in/dinesh-banswal/"
+        },
+        {
+          "name": "Rujuta Dani",
+          "role": "Full Stack Developer",
+          "linkedin": "https://www.linkedin.com/in/rujuta-dani-b000662b3/"
+        },
+        {
+          "name": "Yadnyesh Sawant",
+          "role": "Technical Advisor",
+          "linkedin": "https://www.linkedin.com/in/yadnyesh-sawant/"
+        }
+      ]
+    },
+    {
+      "title": "SPOTFIX: Citizen Government Issue Reporting Platform",
+      "technologies": [
+        "Java",
+        "Dynamic Web Application",
+        "Spring Tool Suite",
+        "Tomcat",
+        "MySQL",
+        "Tailwind CSS",
+        "JavaScript",
+        "Git",
+        "JSP",
+        "Servlet",
+        "Google Stitch"
+      ],
+      "description": "A citizen-government platform for reporting civic issues and tracking their resolution.",
+      "role": "Backend Developer",
+      "timeline": "March 2025",
+      "status": "Under Development",
+      "sourceCode": "https://github.com/YadnyeshSawant/SPOTFIX",
+      "contributors": [
+        {
+          "name": "Yadnyesh Sawant",
+          "role": "Backend Developer",
+          "linkedin": "https://www.linkedin.com/in/yadnyesh-sawant/"
+        },
+        {
+          "name": "Rashita Gomes",
+          "role": "Frontend Developer",
+          "linkedin": "https://www.linkedin.com/in/rashita-gomes-10200325a/"
+        }
+      ]
+    }
+  ]
+}
