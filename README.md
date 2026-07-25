@@ -108,20 +108,32 @@ Alongside engineering, I currently serve as a **Student Placement Representative
 
 <div align="center">
 
-<picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="https://raw.githubusercontent.com/YadnyeshSawant/YadnyeshSawant/output/github-contribution-grid-snake-dark.svg"
-  />
-  <source
-    media="(prefers-color-scheme: light)"
-    srcset="https://raw.githubusercontent.com/YadnyeshSawant/YadnyeshSawant/output/github-contribution-grid-snake.svg"
-  />
-  <img
-    alt="GitHub Contribution Snake"
-    src="https://raw.githubusercontent.com/YadnyeshSawant/YadnyeshSawant/output/github-contribution-grid-snake.svg"
-  />
-</picture>
+<table>
+  <tr>
+    <td align="left"><code>🎮 PROFILE_SNAKE.EXE</code></td>
+    <td align="center"><code>SCORE: <!-- snake_score -->397<!-- snake_score_end --></code></td>
+    <td align="right"><code>HIGH: <!-- snake_high_score -->9,467<!-- snake_high_score_end --></code></td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center">
+      <picture>
+        <source
+          media="(prefers-color-scheme: dark)"
+          srcset="https://raw.githubusercontent.com/YadnyeshSawant/YadnyeshSawant/output/github-contribution-grid-snake-dark.svg"
+        />
+        <source
+          media="(prefers-color-scheme: light)"
+          srcset="https://raw.githubusercontent.com/YadnyeshSawant/YadnyeshSawant/output/github-contribution-grid-snake.svg"
+        />
+        <img
+          alt="GitHub Contribution Snake"
+          src="https://raw.githubusercontent.com/YadnyeshSawant/YadnyeshSawant/output/github-contribution-grid-snake.svg"
+          width="100%"
+        />
+      </picture>
+    </td>
+  </tr>
+</table>
 
 </div>
 

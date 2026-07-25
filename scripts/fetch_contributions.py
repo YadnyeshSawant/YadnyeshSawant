@@ -112,12 +112,48 @@ def build_data(days):
     }
 
 
+def update_readme(data):
+    readme_path = os.path.join(os.path.dirname(__file__), "..", "README.md")
+    if not os.path.exists(readme_path):
+        return
+    with open(readme_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    total = data["total_contributions"]
+    formatted_total = f"{total:,}"
+
+    # Replace score
+    content = re.sub(
+        r"<!-- snake_score -->.*?<!-- snake_score_end -->",
+        f"<!-- snake_score -->{formatted_total}<!-- snake_score_end -->",
+        content
+    )
+    
+    # Update high score if current score is greater
+    m = re.search(r"<!-- snake_high_score -->(.*?)<!-- snake_high_score_end -->", content)
+    if m:
+        try:
+            current_high = int(m.group(1).replace(",", ""))
+            if total > current_high:
+                content = re.sub(
+                    r"<!-- snake_high_score -->.*?<!-- snake_high_score_end -->",
+                    f"<!-- snake_high_score -->{formatted_total}<!-- snake_high_score_end -->",
+                    content
+                )
+        except ValueError:
+            pass
+
+    with open(readme_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+
 if __name__ == "__main__":
     days = fetch_days()
     data = build_data(days)
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     with open(OUT_PATH, "w") as f:
         json.dump(data, f, indent=2)
+    update_readme(data)
     print(f"wrote {OUT_PATH}: {data['total_contributions']} contributions, "
           f"current streak {data['current_streak']['length']}, "
           f"longest streak {data['longest_streak']['length']}")
