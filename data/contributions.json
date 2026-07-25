@@ -1,13 +1,23 @@
 {
   "username": "YadnyeshSawant",
+<<<<<<< HEAD
   "generated_at": "2026-07-25T13:25:53Z",
+=======
+  "generated_at": "2026-07-25T13:46:01Z",
+>>>>>>> d38b275b75278987adf4db257a6a9d879f52601e
   "range": {
     "start": "2025-07-20",
     "end": "2026-07-25"
   },
+<<<<<<< HEAD
   "total_contributions": 388,
   "active_days": 94,
   "avg_per_active_day": 4.1,
+=======
+  "total_contributions": 391,
+  "active_days": 94,
+  "avg_per_active_day": 4.2,
+>>>>>>> d38b275b75278987adf4db257a6a9d879f52601e
   "current_streak": {
     "length": 8,
     "start": "2026-07-18",
@@ -73,7 +83,11 @@
     },
     {
       "month": "2026-07",
+<<<<<<< HEAD
       "total": 39
+=======
+      "total": 42
+>>>>>>> d38b275b75278987adf4db257a6a9d879f52601e
     }
   ],
   "days": [
@@ -1559,7 +1573,11 @@
     },
     {
       "date": "2026-07-25",
+<<<<<<< HEAD
       "count": 1
+=======
+      "count": 4
+>>>>>>> d38b275b75278987adf4db257a6a9d879f52601e
     }
   ]
 }
