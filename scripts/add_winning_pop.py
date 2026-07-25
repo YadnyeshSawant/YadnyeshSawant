@@ -40,8 +40,18 @@ def process_svg(file_path, score):
     pop_percent = start_percent + (show_percent * 0.1)
     hold_percent = start_percent + (show_percent * 0.9)
 
+    is_dark = "dark" in file_path
+    grid_overrides = ""
+    if is_dark:
+        grid_overrides = """
+:root {
+  --ce: #21262d !important;
+  --cb: #30363d60 !important;
+}
+"""
+
     # Style block content
-    custom_style = f"""
+    custom_style = grid_overrides + f"""
 @keyframes pop-animation {{
   0% {{ transform: scale(0); opacity: 0; }}
   {start_percent:.2f}% {{ transform: scale(0); opacity: 0; }}
