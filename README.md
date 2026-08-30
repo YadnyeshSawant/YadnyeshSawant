@@ -111,7 +111,7 @@ Alongside engineering, I currently serve as a **Student Placement Representative
 <table>
   <tr>
     <td align="left"><code>🎮 PROFILE_SNAKE.EXE</code></td>
-    <td align="center"><code>SCORE: <!-- snake_score -->441<!-- snake_score_end --></code></td>
+    <td align="center"><code>SCORE: <!-- snake_score -->436<!-- snake_score_end --></code></td>
     <td align="right"><code>HIGH: <!-- snake_high_score -->9,467<!-- snake_high_score_end --></code></td>
   </tr>
   <tr>
